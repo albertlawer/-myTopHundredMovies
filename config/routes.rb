@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   get "search" => "movies#search", as: :search
   get "details" => "movies#details", as: :details
+  get "show" => "movies#show", as: :show
   post "add_to_list" => "movies#add_to_list", as: :add_to_list
   
 end

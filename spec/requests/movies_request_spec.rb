@@ -47,13 +47,45 @@ RSpec.describe "Movies", type: :request do
             movieData = theData['data']
             theFIrst = movieData.first
             movie_id = theFIrst['id']
-            post "/add_to_list", headers: {HTTP_AUTHORIZATION: encode_token(a_user,time_to_live=1)}, params: {movie_id: movie_id}
+            the_title = theFIrst['original_title']
+            post "/add_to_list", headers: {HTTP_AUTHORIZATION: encode_token(a_user,time_to_live=1)}, params: {movie_id: movie_id, title: the_title}
             expect(response).to have_http_status(:created)
         end
-        
-        
+
+        it "increases count by 1" do
+            get "/search", headers: {HTTP_AUTHORIZATION: encode_token(a_user,time_to_live=1)}, params: movie_search
+            theData = JSON.parse(response.body)
+            movieData = theData['data']
+            theFIrst = movieData.first
+            movie_id = theFIrst['id']
+            the_title = theFIrst['original_title']
+            expect{post "/add_to_list", headers: {HTTP_AUTHORIZATION: encode_token(a_user,time_to_live=1)}, params: {movie_id: movie_id, title: the_title}}.to change(UserMovie, :count).by(1)
+        end
     end
     
     
+    describe "Show movie list" do
+        it "returns unathorized" do
+            get "/show"
+            expect(response).to have_http_status(:unauthorized)
+        end
+
+        it "returns http status success" do
+            i =0
+            while i < 5
+                get "/search", headers: {HTTP_AUTHORIZATION: encode_token(a_user,time_to_live=1)}, params: { name: Faker::Movie.title }
+                theData = JSON.parse(response.body)
+                movieData = theData['data']
+                theFIrst = movieData.first
+                movie_id = theFIrst['id']
+                the_title = theFIrst['original_title']
+                post "/add_to_list", headers: {HTTP_AUTHORIZATION: encode_token(a_user,time_to_live=1)}, params: {movie_id: movie_id, title: the_title}
+                i +=1
+            end
+
+            get "/show", headers: {HTTP_AUTHORIZATION: encode_token(a_user,time_to_live=1)}
+            expect(response).to have_http_status(:ok)
+        end
+    end
     
 end
