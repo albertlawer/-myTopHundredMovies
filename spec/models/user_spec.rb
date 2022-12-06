@@ -18,6 +18,5 @@ RSpec.describe User, type: :model do
       user_two = User.create(fullname: Faker::Name.unique.name, email: email, password: Faker::Internet.password)
       expect(user_two).not_to be_valid
     end
-    
   end
 end

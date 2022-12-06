@@ -54,3 +54,5 @@ end
 gem 'dotenv-rails'
 gem 'jsonapi-serializer'
 gem 'jwt'
+gem 'faraday'
+gem 'faraday_middleware'
